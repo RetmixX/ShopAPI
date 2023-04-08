@@ -1,6 +1,6 @@
 package com.example.retmix.services;
 
-import com.example.retmix.dto.products.CreateProductDTO;
+import com.example.retmix.dto.products.CreateOrUpdateProductDTO;
 import com.example.retmix.dto.products.ProductDTO;
 import com.example.retmix.exceptions.ObjectNotFoundError;
 import com.example.retmix.models.Product;
@@ -17,8 +17,8 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public ProductDTO createProduct(CreateProductDTO createProductDTO){
-        Product createProduct = new Product(createProductDTO);
+    public ProductDTO createProduct(CreateOrUpdateProductDTO createOrUpdateProductDTO) {
+        Product createProduct = new Product(createOrUpdateProductDTO);
         productRepository.save(createProduct);
         return new ProductDTO(
                 createProduct.getId(),
@@ -28,9 +28,9 @@ public class ProductService {
         );
     }
 
-    public List<ProductDTO> allProducts(){
+    public List<ProductDTO> allProducts() {
         return productRepository.findAll().stream()
-                .map(product->
+                .map(product ->
                         new ProductDTO(
                                 product.getId(),
                                 product.getName(),
@@ -39,10 +39,23 @@ public class ProductService {
                 .toList();
     }
 
-    public void removeProduct(int id){
+    public ProductDTO updateProduct(int id, CreateOrUpdateProductDTO updateProductDTO) {
+        Product updateProduct = productRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundError(String.format("Продукт с id:%d не найден", id)));
+        updateProduct.setName(updateProductDTO.name());
+        updateProduct.setPrice(updateProductDTO.price());
+        updateProduct.setDescription(updateProductDTO.description());
+        productRepository.save(updateProduct);
+        return new ProductDTO(
+                updateProduct.getId(),
+                updateProduct.getName(),
+                updateProduct.getDescription(),
+                updateProduct.getPrice());
+    }
+
+    public void removeProduct(int id) {
         Product removeProduct = productRepository.findById(id)
-                .orElseThrow(()-> new ObjectNotFoundError(String.format("Продукт c id:%d не найден", id)));
+                .orElseThrow(() -> new ObjectNotFoundError(String.format("Продукт c id:%d не найден", id)));
         productRepository.delete(removeProduct);
-        System.out.println();
     }
 }

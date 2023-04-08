@@ -10,6 +10,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,15 +19,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@RestControllerAdvice(basePackages = "com.example.retmix")
 public class Handler {
-
-    @ExceptionHandler(IdiNaxyiException.class)
-    public ResponseEntity<SharedError> idiNaxyiException(IdiNaxyiException ex){
-        return ResponseEntity.status(415).body(new SharedError(ex.getMessage(), 415));
-    }
-
     @ExceptionHandler(RegistrationError.class)
     public ResponseEntity<SharedError> registrationError(RegistrationError ex){
         return ResponseEntity.status(409).body(new SharedError(ex.getMessage(), 409));
@@ -37,6 +31,8 @@ public class Handler {
         return ResponseEntity.status(404).body(new SharedError(ex.getMessage(), 404));
     }
 
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<SharedError> paramsError(MethodArgumentTypeMismatchException ex){
         return ResponseEntity.badRequest().body(new SharedError("Переданный параметр не валиден", 400));
     }

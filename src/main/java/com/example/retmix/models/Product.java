@@ -1,6 +1,6 @@
 package com.example.retmix.models;
 
-import com.example.retmix.dto.products.CreateProductDTO;
+import com.example.retmix.dto.products.CreateOrUpdateProductDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -18,7 +18,7 @@ public class Product extends BaseModel{
     public Product() {
     }
 
-    public Product(CreateProductDTO data){
+    public Product(CreateOrUpdateProductDTO data){
         this.name = data.name();
         this.description = data.description();
         this.price = data.price();
