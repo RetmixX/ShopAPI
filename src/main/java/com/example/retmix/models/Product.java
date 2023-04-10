@@ -1,9 +1,9 @@
 package com.example.retmix.models;
 
 import com.example.retmix.dto.products.CreateOrUpdateProductDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -14,6 +14,9 @@ public class Product extends BaseModel{
     private String description;
     @Column(name = "price")
     private int price;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    private List<Cart> cartUser;
 
     public Product() {
     }

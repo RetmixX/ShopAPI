@@ -41,4 +41,117 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="1.1.2" author="retmix">
+        <addColumn tableName="users">
+            <column name="token" type="text">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <createTable tableName="carts">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="orders">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cart_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="carts"
+                                 baseColumnNames="user_id"
+                                 constraintName="user_cart_fk"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="carts"
+                                 baseColumnNames="product_id"
+                                 constraintName="cart_product_fk"
+                                 referencedTableName="products"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="orders"
+                                 baseColumnNames="user_id"
+                                 constraintName="user_order_fk"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="orders"
+                                 baseColumnNames="cart_id"
+                                 constraintName="order_car_fk"
+                                 referencedTableName="carts"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="1.1.3" author="Retmix">
+        <createTable tableName="permissions">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users_permissions">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="users_permissions"
+                                 baseColumnNames="user_id"
+                                 constraintName="user_permissions_fk"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="users_permissions"
+                                 baseColumnNames="permission_id"
+                                 constraintName="permission_name_fk"
+                                 referencedTableName="permissions"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="1.1.4" author="Retmix">
+        <insert tableName="permissions">
+            <column name="name" value="add product"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="remove product"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="edit product"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="add product to cart"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="remove product from cart"/>
+        </insert>
+        <insert tableName="permissions">
+            <column name="name" value="place on order"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

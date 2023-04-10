@@ -2,16 +2,15 @@ package com.example.retmix.controller;
 
 import com.example.retmix.dto.users.RegistrationUserDTO;
 import com.example.retmix.dto.users.UserDTO;
-import com.example.retmix.exceptions.IdiNaxyiException;
-import com.example.retmix.response.HelloResponse;
+import com.example.retmix.models.enums.AvailablePermission;
 import com.example.retmix.services.UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.retmix.utils.TokenUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,7 +28,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> store(@Valid @RequestBody RegistrationUserDTO registrationUserDTO){
-        return ResponseEntity.status(201).body(userService.createUser(registrationUserDTO));
+    public ResponseEntity<?> store(@Valid @RequestBody RegistrationUserDTO registrationUserDTO) throws NoSuchAlgorithmException {
+        return ResponseEntity.status(201).body(Map.of(
+                "token", userService.createUser(registrationUserDTO)
+        ));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("authorization") String tokenRequest){
+        userService.removeToken(tokenRequest.substring(tokenRequest.indexOf(" ")).trim());
+        return ResponseEntity.ok(Map.of("data", Map.of("message", "logout")));
     }
 }
