@@ -13,15 +13,22 @@ public class Order extends BaseModel implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
-
     @Column(name = "price")
     private int price;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "orders_products", joinColumns = {@JoinColumn(name = "order_id")},
+    inverseJoinColumns = {@JoinColumn(name = "product_id")})
+    private List<Product> productsOrder;
+
 
     public Order() {
+    }
+
+    public Order(User user, int price, List<Product> productsOrder) {
+        this.user = user;
+        this.price = price;
+        this.productsOrder = productsOrder;
     }
 
     public User getUser() {
@@ -32,6 +39,9 @@ public class Order extends BaseModel implements Serializable {
         this.user = user;
     }
 
+    public List<Product> getProductsOrder() {
+        return productsOrder;
+    }
 
     public int getPrice() {
         return price;

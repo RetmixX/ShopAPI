@@ -1,5 +1,6 @@
 package com.example.retmix.controller;
 
+import com.example.retmix.dto.users.AuthorizationUserDTO;
 import com.example.retmix.dto.users.RegistrationUserDTO;
 import com.example.retmix.dto.users.UserDTO;
 import com.example.retmix.models.enums.AvailablePermission;
@@ -36,7 +37,12 @@ public class UserController {
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("authorization") String tokenRequest){
-        userService.removeToken(tokenRequest.substring(tokenRequest.indexOf(" ")).trim());
+        userService.removeToken(tokenRequest);
         return ResponseEntity.ok(Map.of("data", Map.of("message", "logout")));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody AuthorizationUserDTO authData) throws NoSuchAlgorithmException {
+        return ResponseEntity.ok(Map.of("token", userService.authorization(authData)));
     }
 }

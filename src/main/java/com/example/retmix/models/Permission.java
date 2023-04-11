@@ -18,6 +18,10 @@ public class Permission extends BaseModel{
     public Permission() {
     }
 
+    public Permission(AvailablePermission name) {
+        this.name = name;
+    }
+
     public AvailablePermission getName() {
         return name;
     }

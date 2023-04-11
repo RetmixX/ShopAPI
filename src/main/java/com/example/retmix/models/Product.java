@@ -15,8 +15,11 @@ public class Product extends BaseModel{
     @Column(name = "price")
     private int price;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
-    private List<Cart> cartUser;
+    @OneToMany(mappedBy = "product")
+    private List<Cart> cartList;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "productsOrder")
+    private List<Order> orders;
 
     public Product() {
     }

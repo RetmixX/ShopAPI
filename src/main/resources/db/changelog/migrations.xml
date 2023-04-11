@@ -133,24 +133,115 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="1.1.4" author="Retmix">
-        <insert tableName="permissions">
-            <column name="name" value="add product"/>
+    <changeSet id="1.1.5" author="Retmix">
+        <dropForeignKeyConstraint baseTableName="orders" constraintName="order_car_fk"/>
+        <dropColumn tableName="orders" columnName="cart_id"/>
+    </changeSet>
+
+    <changeSet id="1.1.6" author="Retmix">
+        <createTable tableName="orders_products">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="order_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="product_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="orders_products"
+                                 baseColumnNames="order_id"
+                                 constraintName="order_fk"
+                                 referencedTableName="orders"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="orders_products"
+                                 baseColumnNames="product_id"
+                                 constraintName="product_order_fk"
+                                 referencedTableName="products"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="1.1.7" author="Retmix">
+        <insert tableName="users">
+            <column name="name" value="Andrey"/>
+            <column name="surname" value="Neupokoev"/>
+            <column name="patronymic" value="Retmix"/>
+            <column name="email" value="retmix@gmail.com"/>
+            <column name="password" value="passwordAdmin"/>
         </insert>
+
         <insert tableName="permissions">
-            <column name="name" value="remove product"/>
+            <column name="name" value="ADD_PRODUCT_TO_CART"/>
         </insert>
+
         <insert tableName="permissions">
-            <column name="name" value="edit product"/>
+            <column name="name" value="REMOVE_PRODUCT_FROM_CART"/>
         </insert>
+
         <insert tableName="permissions">
-            <column name="name" value="add product to cart"/>
+            <column name="name" value="PLACE_ON_ORDER"/>
         </insert>
+
         <insert tableName="permissions">
-            <column name="name" value="remove product from cart"/>
+            <column name="name" value="EDIT_PRODUCT"/>
         </insert>
+
         <insert tableName="permissions">
-            <column name="name" value="place on order"/>
+            <column name="name" value="ADD_PRODUCT"/>
+        </insert>
+
+        <insert tableName="permissions">
+            <column name="name" value="REMOVE_PRODUCT"/>
+        </insert>
+
+        <insert tableName="permissions">
+            <column name="name" value="ADD_PERMISSION"/>
+        </insert>
+
+        <insert tableName="permissions">
+            <column name="name" value="REMOVE_PERMISSION"/>
+        </insert>
+
+        <insert tableName="permissions">
+            <column name="name" value="SHOW_PERMISSION"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="4"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="5"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="6"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="7"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="7"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="8"/>
+        </insert>
+
+        <insert tableName="users_permissions">
+            <column name="user_id" value="1"/>
+            <column name="permission_id" value="9"/>
         </insert>
     </changeSet>
 

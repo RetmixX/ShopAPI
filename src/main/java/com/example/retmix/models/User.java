@@ -1,6 +1,8 @@
 package com.example.retmix.models;
 
 import com.example.retmix.dto.users.RegistrationUserDTO;
+import com.example.retmix.exceptions.PermissionError;
+import com.example.retmix.models.enums.AvailablePermission;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -27,11 +29,11 @@ public class User extends BaseModel{
     @Column(name = "token")
     private String token;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Cart> cart;
+    @OneToMany(mappedBy = "user")
+    private List<Cart> productCart;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    List<Order> orders;
+    private List<Order> orders;
 
     public User(RegistrationUserDTO data){
         this.name = data.name();
@@ -88,16 +90,32 @@ public class User extends BaseModel{
         return userPermissions;
     }
 
+    public void addPermission(Permission newPermission){
+        this.userPermissions.stream().filter(p->p.getId() == newPermission.getId()).findFirst().ifPresent(per->{
+            throw new PermissionError(String.format("Право '%s' уже есть у данного пользователя",
+                    per.getName().getPermission()));
+        });
+
+        this.userPermissions.add(newPermission);
+    }
+
+    public void removePermission(Permission permission){
+        this.userPermissions.stream().filter(p->p.getId() == p.getId())
+                .findFirst().orElseThrow(()->new PermissionError("Данных прав у пользователя нету"));
+
+        this.userPermissions.remove(permission);
+    }
+
     public void setPermissions(List<Permission> permissions) {
         this.userPermissions = permissions;
     }
 
-    public void addPermission(Permission permission){
-        this.userPermissions.add(permission);
+    public List<Cart> getProductCart(){
+        return this.productCart;
     }
 
-    public boolean removePermission(Permission permission){
-        return this.userPermissions.remove(permission);
+    public List<Order> getOrders() {
+        return orders;
     }
 
     public String getFullName(){

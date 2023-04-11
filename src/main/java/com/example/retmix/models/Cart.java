@@ -1,24 +1,24 @@
 package com.example.retmix.models;
 
-import jakarta.persistence.*;
-
-import java.io.Serializable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity(name = "carts")
-public class Cart extends BaseModel implements Serializable {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+public class Cart extends BaseModel {
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @OneToOne(mappedBy = "cart", fetch = FetchType.LAZY)
-    private Order order;
-
     public Cart() {
+    }
+
+    public Cart(User user, Product product) {
+        this.user = user;
+        this.product = product;
     }
 
     public User getUser() {

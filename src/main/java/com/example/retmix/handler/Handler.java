@@ -4,11 +4,8 @@ import com.example.retmix.exceptions.*;
 import com.example.retmix.responseError.SharedError;
 import com.example.retmix.responseError.ValidationError;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice(basePackages = "com.example.retmix")
+@RestControllerAdvice
 public class Handler {
     @ExceptionHandler(RegistrationError.class)
     public ResponseEntity<SharedError> registrationError(RegistrationError ex){
@@ -58,5 +55,20 @@ public class Handler {
     @ExceptionHandler(PermissionDenied.class)
     public ResponseEntity<?> permissionDenied(PermissionDenied ex){
         return ResponseEntity.status(403).body(Map.of("error", Map.of("message", ex.getMessage())));
+    }
+
+    @ExceptionHandler(CartEmptyError.class)
+    public ResponseEntity<?> cartUserEmpty(CartEmptyError ex){
+        return ResponseEntity.status(422).body(Map.of("error", Map.of("message", ex.getMessage())));
+    }
+
+    @ExceptionHandler(PermissionError.class)
+    public ResponseEntity<?> permissionError(PermissionError ex){
+        return ResponseEntity.status(409).body(Map.of("error", Map.of("message", ex.getMessage())));
+    }
+
+    @ExceptionHandler(AuthorizationError.class)
+    public ResponseEntity<?> authorizationFailed(AuthorizationError ex){
+        return ResponseEntity.status(401).body(Map.of("error", Map.of("message", ex.getMessage())));
     }
 }

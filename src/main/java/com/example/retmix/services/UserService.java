@@ -1,10 +1,13 @@
 package com.example.retmix.services;
 
+import com.example.retmix.dto.users.AuthorizationUserDTO;
 import com.example.retmix.dto.users.RegistrationUserDTO;
 import com.example.retmix.dto.users.UserDTO;
+import com.example.retmix.exceptions.AuthorizationError;
 import com.example.retmix.exceptions.PermissionDenied;
 import com.example.retmix.exceptions.RegistrationError;
 import com.example.retmix.exceptions.UserByTokenNotFountError;
+import com.example.retmix.models.Permission;
 import com.example.retmix.models.User;
 import com.example.retmix.models.enums.AvailablePermission;
 import com.example.retmix.repository.UserRepository;
@@ -36,12 +39,32 @@ public class UserService {
         UserDTO dto = new UserDTO(user.getId(),user.getFullName(), user.getEmail());
 
         user.setToken(tokenUtil.generateToken(dto));
+        user.setPermissions(
+                List.of(new Permission(AvailablePermission.REMOVE_PRODUCT_FROM_CART),
+                        new Permission(AvailablePermission.PLACE_ON_ORDER),
+                        new Permission(AvailablePermission.ADD_PRODUCT_TO_CART)
+                ));
         repository.save(user);
 
         return user.getToken();
     }
 
+    public String authorization(AuthorizationUserDTO data) throws NoSuchAlgorithmException {
+        User user = repository.findByEmail(data.email())
+                .orElseThrow(()->new AuthorizationError("Неправильная почта или пароль"));
+
+        if (!user.getPassword().equals(data.password())){
+            throw new AuthorizationError("Неправильная почта или пароль");
+        }
+        String token = tokenUtil.generateToken(new UserDTO(user.getId(), user.getFullName(), user.getEmail()));
+        user.setToken(token);
+        repository.save(user);
+        return token;
+    }
+
     public User getUserByToken(String token){
+        var tokenT = prepareToken(token);
+        var test = repository.findByToken(prepareToken(token));
         return repository.findByToken(prepareToken(token)).orElseThrow(() -> new UserByTokenNotFountError("Токен не валиден"));
     }
 
@@ -53,6 +76,7 @@ public class UserService {
     public void removeToken(@NotNull String token){
         User user = repository.findByToken(prepareToken(token)).orElseThrow(() -> new UserByTokenNotFountError("Токен не валиден"));
         user.setToken(null);
+        repository.save(user);
     }
 
     public List<UserDTO> allUsers(){
