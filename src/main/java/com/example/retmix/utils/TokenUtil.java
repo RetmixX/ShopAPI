@@ -13,7 +13,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-
+@Component
 public class TokenUtil {
 
     public String generateToken(UserDTO userDTO) throws NoSuchAlgorithmException {

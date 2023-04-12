@@ -10,7 +10,9 @@ import com.example.retmix.exceptions.UserByTokenNotFountError;
 import com.example.retmix.models.Permission;
 import com.example.retmix.models.User;
 import com.example.retmix.models.enums.AvailablePermission;
+import com.example.retmix.repository.PermissionRepository;
 import com.example.retmix.repository.UserRepository;
+import com.example.retmix.utils.PasswordHash;
 import com.example.retmix.utils.TokenUtil;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,16 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
+    private final PermissionRepository permissionRepository;
     private final TokenUtil tokenUtil;
+    private final PasswordHash passwordHash;
 
 
-    public UserService(UserRepository repository, TokenUtil tokenUtil) {
+    public UserService(UserRepository repository, PermissionRepository permissionRepository, TokenUtil tokenUtil, PasswordHash passwordHash) {
         this.repository = repository;
+        this.permissionRepository = permissionRepository;
         this.tokenUtil = tokenUtil;
+        this.passwordHash = passwordHash;
     }
 
     public String createUser(RegistrationUserDTO registrationUserDTO) throws NoSuchAlgorithmException {
@@ -35,15 +41,14 @@ public class UserService {
             throw new RegistrationError("Невалидная почта");
         });
 
-        User user = new User(registrationUserDTO);
+        User user = new User(registrationUserDTO, passwordHash.hashPassword(registrationUserDTO.password()));
         UserDTO dto = new UserDTO(user.getId(),user.getFullName(), user.getEmail());
 
         user.setToken(tokenUtil.generateToken(dto));
-        user.setPermissions(
-                List.of(new Permission(AvailablePermission.REMOVE_PRODUCT_FROM_CART),
-                        new Permission(AvailablePermission.PLACE_ON_ORDER),
-                        new Permission(AvailablePermission.ADD_PRODUCT_TO_CART)
-                ));
+        user.addPermission(permissionRepository.findByName(AvailablePermission.REMOVE_PRODUCT_FROM_CART));
+        user.addPermission(permissionRepository.findByName(AvailablePermission.PLACE_ON_ORDER));
+        user.addPermission(permissionRepository.findByName(AvailablePermission.ADD_PRODUCT_TO_CART));
+
         repository.save(user);
 
         return user.getToken();
@@ -53,7 +58,7 @@ public class UserService {
         User user = repository.findByEmail(data.email())
                 .orElseThrow(()->new AuthorizationError("Неправильная почта или пароль"));
 
-        if (!user.getPassword().equals(data.password())){
+        if (!passwordHash.checkPassword(data.password(), user.getPassword())){
             throw new AuthorizationError("Неправильная почта или пароль");
         }
         String token = tokenUtil.generateToken(new UserDTO(user.getId(), user.getFullName(), user.getEmail()));

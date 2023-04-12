@@ -5,6 +5,7 @@ import com.example.retmix.exceptions.PermissionError;
 import com.example.retmix.models.enums.AvailablePermission;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,12 +36,12 @@ public class User extends BaseModel{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Order> orders;
 
-    public User(RegistrationUserDTO data){
+    public User(RegistrationUserDTO data, String password){
         this.name = data.name();
         this.surname = data.surname();
         this.patronymic = data.patronymic();
         this.email = data.email();
-        this.password = data.password();
+        this.password = password;
     }
 
     public User() {
@@ -91,6 +92,10 @@ public class User extends BaseModel{
     }
 
     public void addPermission(Permission newPermission){
+        if (this.userPermissions == null){
+            this.userPermissions = new ArrayList<>();
+        }
+
         this.userPermissions.stream().filter(p->p.getId() == newPermission.getId()).findFirst().ifPresent(per->{
             throw new PermissionError(String.format("Право '%s' уже есть у данного пользователя",
                     per.getName().getPermission()));

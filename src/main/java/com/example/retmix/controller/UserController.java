@@ -7,9 +7,9 @@ import com.example.retmix.models.enums.AvailablePermission;
 import com.example.retmix.services.UserService;
 import com.example.retmix.utils.TokenUtil;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
